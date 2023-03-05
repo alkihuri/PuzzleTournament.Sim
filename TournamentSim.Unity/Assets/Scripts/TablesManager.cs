@@ -11,14 +11,9 @@ public class TablesManager : MonoBehaviour
     public List<TableController> Tables { get => _tables; set => _tables = value; }
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         Tables = GetComponentsInChildren<TableController>().ToList();
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+     
 }

@@ -117,7 +117,7 @@ Transform:
   m_Children:
   - {fileID: 606331613}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1899453705122101073
 MonoBehaviour:
@@ -131,6 +131,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87ee0f2a789bcfb448158bd15b50c35b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _delay_at_registation: 2
+  Distance_registration_ok: 0.5
 --- !u!136 &1016705141386551635
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -150,7 +152,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 1.18
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
@@ -164,7 +166,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 2
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -175,7 +177,7 @@ NavMeshAgent:
   m_Height: 2
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 2
 --- !u!54 &1817029223
 Rigidbody:
   m_ObjectHideFlags: 0

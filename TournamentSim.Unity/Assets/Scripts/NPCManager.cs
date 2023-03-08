@@ -70,9 +70,14 @@ public class NPCManager : MonoBehaviour
         StartCoroutine(SpawDelayCompitors());
     }
 
-
+    private float _stopWatch = 0;
     private void Update()
     {
-        _text.text = "remain comp-s: " + _compitors.Where(c=>c.gameObject.activeInHierarchy).Count().ToString();
+
+        _stopWatch =  _compitors.Where(c => c.gameObject.activeInHierarchy).Count() > 0 ? _stopWatch + Time.deltaTime : _stopWatch; 
+
+        _text.text = "remain comp-s: " + _compitors.Where(c=>c.gameObject.activeInHierarchy).Count().ToString()  + '\n' + _stopWatch.ToString("#.");
     }
+
+    
 }

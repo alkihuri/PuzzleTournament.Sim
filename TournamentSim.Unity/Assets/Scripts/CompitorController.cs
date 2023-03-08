@@ -7,7 +7,7 @@ using UnityEngine.AI;
 using UnityEngine.UIElements;
 using UnityEngine.VFX;
 
-public class NPCController : MonoBehaviour
+public class CompitorController : MonoBehaviour
 {
     [SerializeField, Range(0, 15)] private float _delay_at_registation = 2f;
     [SerializeField, Range(0, 15)] private float Distance_registration_ok = 2f;
@@ -17,9 +17,11 @@ public class NPCController : MonoBehaviour
     public TablesManager TablesManager { get; internal set; }
     public bool OnWay { get; private set; }
     public TableController Table { get; internal set; }
+    public int GameCounter { get; private set; }
 
     private void Awake()
     {
+        GameCounter= 0;
         OnWay = false;
         _navigation = GetComponent<NavMeshAgent>();
     }
@@ -116,9 +118,9 @@ public class NPCController : MonoBehaviour
 
     internal void GoToRegistationStart(Transform registation) => StartCoroutine(GoToRegistation(registation));
 
-    private void OnDestroy()
+     public void  NextPlay()
     {
-        Table.IsBusy = false;
+        GameCounter++;
         Table.Counter++;
     }
 }

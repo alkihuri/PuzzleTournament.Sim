@@ -31,7 +31,7 @@ public class NPCManager : MonoBehaviour
             if (_spawmPoints.Length > 0)
                 newNpc.transform.position = _spawmPoints[Random.Range(0, _spawmPoints.Length - 1)].position;
 
-            var npcController = newNpc.GetComponent<NPCController>();
+            var npcController = newNpc.GetComponent<CompitorController>();
             npcController.TablesManager = _tablesManager;
             npcController.GoToRegistationStart(_registation);
 

@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
@@ -47,16 +47,17 @@ public class TableController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.GetComponent<NPCController>())
+        if (other.gameObject.GetComponent<CompitorController>())
         {
             IsBusy = true;
-            other.gameObject.GetComponent<NPCController>().Table = this;
-            Destroy(other.gameObject, Random.Range(2, 20));
+            var compitor = other.gameObject.GetComponent<CompitorController>();
+            compitor.Table = this;
+            с
         }
     }
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.GetComponent<NPCController>())
+        if (other.gameObject.GetComponent<CompitorController>())
         {
             IsBusy = false;
         }

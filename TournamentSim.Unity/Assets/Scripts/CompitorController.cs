@@ -9,118 +9,60 @@ using UnityEngine.VFX;
 
 public class CompitorController : MonoBehaviour
 {
-    [SerializeField, Range(0, 15)] private float _delay_at_registation = 2f;
-    [SerializeField, Range(0, 15)] private float Distance_registration_ok = 2f;
-    private NavMeshAgent _navigation;
-    private Transform _target;
-
+    [SerializeField] int _numOfGames = 0;
     public TablesManager TablesManager { get; internal set; }
-    public bool OnWay { get; private set; }
-    public TableController Table { get; internal set; }
-    public int GameCounter { get; private set; }
+    public Transform WaitingArea { get; internal set; }
+    public Transform Registration { get; internal set; }
+    public bool IsPlaying { get; internal set; }
+
+    NavMeshAgent _navigation;
 
     private void Awake()
     {
-        GameCounter= 0;
-        OnWay = false;
-        _navigation = GetComponent<NavMeshAgent>();
+        _navigation= GetComponent<NavMeshAgent>();  
     }
 
-    private void OnEnable()
+    public void StartBehavior()
     {
-        StartCoroutine(LiteUpdate());
+        _navigation.Warp(transform.position);
+        StartCoroutine(BehaviourOfCompitor());
     }
 
-    private void OnDisable()
+    private IEnumerator BehaviourOfCompitor()
     {
-        StopCoroutine(LiteUpdate());
-    }
+        _navigation.SetDestination(Registration.position);
+        yield return new WaitWhile(() => _navigation.remainingDistance > 0); 
+        yield return new WaitForSeconds(12);
 
-    public void GoToTable()
-    {
-        StartCoroutine(FindAndFollow());
-        StartCoroutine(LiteUpdate());
-    }
-
-    public IEnumerator GoToRegistation(Transform registration)
-    {
-        var registationPoint = registration.position;
+        _navigation.SetDestination(WaitingArea.position);
+        yield return new WaitWhile(() => _navigation.remainingDistance > 2);
 
 
+        yield return new WaitUntil(() => TablesManager.Tables.Where(t => t.HasCompitor == false).Count() > 0);
 
-        if (!_navigation.isOnNavMesh)
-            _navigation.Warp(transform.position);
+        var closestTable = TablesManager.Tables
+                            .Where(t => t.HasCompitor == false)
+                                    .OrderBy(t => Vector3.Distance(transform.position, t.transform.position)).First();
 
-        yield return new WaitWhile(() => registration.gameObject.GetComponent<RegistrationTableController>().IsBusy);
-        _navigation.SetDestination(registationPoint); 
-        yield return new WaitWhile(() => _navigation.remainingDistance == 0);
-        registration.gameObject.GetComponent<RegistrationTableController>().IsBusy = true; 
-        yield return new WaitForSeconds(_delay_at_registation);
-        registration.gameObject.GetComponent<RegistrationTableController>().IsBusy = false;
-        GoToTable();
-    }
 
-    private IEnumerator FindAndFollow()
-    {
-        var nonBusy = TablesManager.Tables.Where(t => t.IsBusy == false);
-        OnWay = true;
-        if (!(nonBusy.Count() > 0))
+        _navigation.SetDestination(closestTable.transform.position);
+        closestTable.HasCompitor = true;
+        closestTable.ThisCompitor = this;
+        yield return new WaitWhile(() => _navigation.remainingDistance > 0);
+        yield return new WaitUntil(() => closestTable.ThisTableRunner != null);
+
+        for (int x = 0; x < 5; x++)
         {
-            yield break;
+           
+
+            IsPlaying = true;
+            yield return new WaitForSeconds(UnityEngine.Random.Range(2, 5));
+            IsPlaying = false;
+            _numOfGames++;
         }
-
-
-        var closestTable = nonBusy.Select(t => t.transform).OrderBy(tP => Vector3.Distance(transform.position, tP.position)).ToList()[0];
-        _target = closestTable;
-        _navigation.SetDestination(_target.position);
-        yield return new WaitWhile(() => Vector3.Distance(transform.position, _target.position) > 0.2f);
-        Debug.Log("+1");
-        OnWay = false;
+        closestTable.ThisCompitor = null;
+        closestTable.HasCompitor = false;
+        gameObject.SetActive(false);
     }
-
-
-
-
-    IEnumerator LiteUpdate()
-    {
-        while (gameObject.activeInHierarchy)
-        {
-            yield return new WaitForSeconds(1f);
-            LiteUpdateLogic();
-        }
-    }
-
-    private void LiteUpdateLogic()
-    {
-        GoToNextOne();
-    }
-
-    private void GoToNextOne()
-    {
-        if (_target == null)
-            return;
-
-
-        if (_target.gameObject.GetComponent<TableController>().IsBusy == true)
-        {
-            StopAllCoroutines();
-            StartCoroutine(FindAndFollow());
-        }
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (_target != null)
-        {
-            Gizmos.DrawLine(transform.position, _target.position);
-        }
-    }
-
-    internal void GoToRegistationStart(Transform registation) => StartCoroutine(GoToRegistation(registation));
-
-     public void  NextPlay()
-    {
-        GameCounter++;
-        Table.Counter++;
-    }
+     
 }
